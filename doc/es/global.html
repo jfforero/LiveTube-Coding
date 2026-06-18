@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>LiveTube-Coding — Referencia completa</title>
+    <link type="text/css" rel="stylesheet" href="../styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="../styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="doc-es.css">
+</head>
+<body data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" class="embedded-help">
+
+<div id="main">
+    <h1 class="page-title">LiveTube-Coding — Referencia de funciones</h1>
+
+    <p class="lang-switch"><a href="../global.html">Ver documentación en inglés</a></p>
+
+    <div class="doc-toolbar">
+        <label class="doc-search-label" for="doc-search">Buscar en esta ayuda</label>
+        <input type="search" id="doc-search" placeholder="Ej.: buscar, loop, volumen, blur, rejilla…" autocomplete="off">
+        <div id="doc-search-count"></div>
+    </div>
+
+    <section>
+        <article>
+
+            <h3 class="subsection-title" id="introduccion" data-doc-entry="introduccion inicio que es livetube">Introducción</h3>
+            <div class="description">
+                <p><strong>LiveTube-Coding</strong> permite programar en vivo una rejilla de videos de YouTube desde un editor de código. Puedes usar tanto los nombres originales en inglés como una capa completa de <strong>alias en español</strong>.</p>
+                <p>Flujo típico: crear rejilla → buscar un video → usar su ID o <a href="#etiquetas-video">etiqueta</a> → controlar reproducción, audio, bucles y <a href="#applyPreset">efectos visuales</a>.</p>
+            </div>
+
+            <div class="doc-example">
+                <div class="doc-example-title">Ejemplo — sesión mínima</div>
+<pre class="prettyprint"><code>// 1. Crear rejilla 2×2 con un video inicial
+crear(2, 2, "dQw4w9WgXcQ")
+
+// 2. Buscar otro video y hacer clic en el resultado para insertar su ID
+buscar("música experimental")
+
+// 3. Sustituir el video de la celda 0
+cambiar(0, "ID_QUE_INSERTASTE")
+
+// 4. Reproducir todos con fade-in de 3 segundos
+fundirEntrada(todos, 3)
+reproducir(todos)</code></pre>
+            </div>
+
+            <h3 class="subsection-title" id="atajos" data-doc-entry="atajos teclado editor shift enter alt esc">Atajos del editor</h3>
+            <table class="params">
+                <thead><tr><th>Atajo</th><th class="last">Acción</th></tr></thead>
+                <tbody>
+                    <tr><td class="name"><code>Shift+Enter</code></td><td class="description last">Ejecuta la línea actual o el texto seleccionado.</td></tr>
+                    <tr><td class="name"><code>Alt+Enter</code></td><td class="description last">Abre la ayuda en inglés de la función en esa línea.</td></tr>
+                    <tr><td class="name"><code>Alt+Shift+Enter</code></td><td class="description last">Abre la ayuda en español de la función en esa línea (panel derecho).</td></tr>
+                    <tr><td class="name"><code>Esc</code></td><td class="description last">Alterna entre editor y rejilla. Si hay celdas seleccionadas, inserta sus índices en el editor.</td></tr>
+                    <tr><td class="name"><code>Clic en celda</code></td><td class="description last">Selecciona/deselecciona una celda (overlay rojo). Útil con <code>Esc</code> para obtener índices.</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="subsection-title" id="_howToSelectVideos" data-doc-entry="seleccionar videos indice all lista not expresion">Cómo seleccionar videos</h3>
+            <div class="description">
+                Casi todas las funciones reciben como primer argumento <em>qué videos</em> controlar. Los índices empiezan en <code>0</code> y avanzan fila por fila, de izquierda a derecha.
+            </div>
+
+            <div class="doc-grid-map">
+Rejilla 3×3 — mapa de índices:
+  ┌───┬───┬───┐
+  │ 0 │ 1 │ 2 │
+  ├───┼───┼───┤
+  │ 3 │ 4 │ 5 │
+  ├───┼───┼───┤
+  │ 6 │ 7 │ 8 │
+  └───┴───┴───┘
+            </div>
+
+            <table class="params">
+                <thead><tr><th>Forma</th><th>Tipo</th><th class="last">Descripción</th></tr></thead>
+                <tbody>
+                    <tr><td class="name"><code>0</code></td><td class="type"><span class="param-type">entero</span></td><td class="description last">Un solo video por índice.</td></tr>
+                    <tr><td class="name"><code>all</code> o <code>null</code></td><td class="type"><span class="param-type">all</span></td><td class="description last">Todos los videos de la rejilla.</td></tr>
+                    <tr><td class="name"><code>[0, 2, 5]</code></td><td class="type"><span class="param-type">Array</span></td><td class="description last">Lista de índices concretos.</td></tr>
+                    <tr><td class="name"><code>not(3, 7)</code></td><td class="type"><span class="param-type">función</span></td><td class="description last">Todos excepto los índices indicados. Ver <a href="#not">not()</a>.</td></tr>
+                    <tr><td class="name"><code>"&gt;3"</code></td><td class="type"><span class="param-type">string</span></td><td class="description last">Expresión evaluada por índice: <code>"&gt;3"</code>, <code>"%2==0"</code>, etc.</td></tr>
+                </tbody>
+            </table>
+
+            <div class="doc-example">
+                <div class="doc-example-title">Ejemplos de selección</div>
+<pre class="prettyprint"><code>reproducir(0)              // solo el primer video
+pausar([1, 3])             // videos 1 y 3
+silenciar(todos, true)     // silenciar todos
+desenfocar(excepto(4), 3)  // desenfocar todos menos el 4</code></pre>
+            </div>
+
+            <h3 class="subsection-title" id="variables" data-doc-entry="variables rand iter all globales">Variables globales útiles</h3>
+            <table class="params">
+                <thead><tr><th>Nombre</th><th class="last">Descripción</th></tr></thead>
+                <tbody>
+                    <tr><td class="name"><code>rand</code></td><td class="description last">Alias de <code>Math.random</code> — números aleatorios.</td></tr>
+                    <tr><td class="name"><code>iter</code></td><td class="description last">Alias de <code>setInterval</code> — temporizadores personalizados.</td></tr>
+                    <tr><td class="name"><code>all</code></td><td class="description last">Referencia para seleccionar todos los videos (equivalente a <code>null</code> en muchas funciones).</td></tr>
+                </tbody>
+            </table>
+
+            <!-- ═══ REJILLA Y BÚSQUEDA ═══ -->
+
+            <h3 class="subsection-title">Rejilla y búsqueda</h3>
+
+            <h4 class="name" id="funciones-espanol" data-doc-entry="funciones en espanol aliases crear buscar reproducir pausar volumen">Funciones en español</h4>
+            <div class="description">
+                Esta versión incluye alias en español para trabajar sin usar nombres en inglés. Los nombres originales siguen funcionando para compatibilidad.
+            </div>
+            <table class="params">
+                <thead><tr><th>Español</th><th>Equivalente</th><th class="last">Uso</th></tr></thead>
+                <tbody>
+                    <tr><td class="name"><code>crear()</code></td><td class="type"><code>createGrid()</code></td><td class="description last">Crear una rejilla nueva.</td></tr>
+                    <tr><td class="name"><code>agregar()</code></td><td class="type"><code>add()</code></td><td class="description last">Añadir filas o columnas.</td></tr>
+                    <tr><td class="name"><code>buscar()</code></td><td class="type"><code>search()</code></td><td class="description last">Buscar videos en YouTube.</td></tr>
+                    <tr><td class="name"><code>cambiar()</code></td><td class="type"><code>cue()</code></td><td class="description last">Reemplazar videos por otro ID.</td></tr>
+                    <tr><td class="name"><code>reproducir()</code></td><td class="type"><code>play()</code></td><td class="description last">Reproducir videos.</td></tr>
+                    <tr><td class="name"><code>pausar()</code></td><td class="type"><code>pause()</code></td><td class="description last">Pausar videos.</td></tr>
+                    <tr><td class="name"><code>irA()</code></td><td class="type"><code>seek()</code></td><td class="description last">Ir a un tiempo concreto.</td></tr>
+                    <tr><td class="name"><code>velocidad()</code></td><td class="type"><code>speed()</code></td><td class="description last">Cambiar velocidad.</td></tr>
+                    <tr><td class="name"><code>sincronizar()</code></td><td class="type"><code>sync()</code></td><td class="description last">Sincronizar tiempos.</td></tr>
+                    <tr><td class="name"><code>calidad()</code></td><td class="type"><code>setQ()</code></td><td class="description last">Cambiar calidad de videos concretos.</td></tr>
+                    <tr><td class="name"><code>calidadGeneral()</code></td><td class="type"><code>setQoverall()</code></td><td class="description last">Fijar calidad por defecto.</td></tr>
+                    <tr><td class="name"><code>silenciar()</code></td><td class="type"><code>mute()</code></td><td class="description last">Silenciar o activar audio.</td></tr>
+                    <tr><td class="name"><code>volumen()</code></td><td class="type"><code>volume()</code></td><td class="description last">Fijar volumen.</td></tr>
+                    <tr><td class="name"><code>subirVolumen()</code></td><td class="type"><code>turnup()</code></td><td class="description last">Subir o bajar el volumen actual.</td></tr>
+                    <tr><td class="name"><code>fundirEntrada()</code></td><td class="type"><code>fadeIn()</code></td><td class="description last">Fade-in de audio.</td></tr>
+                    <tr><td class="name"><code>fundirSalida()</code></td><td class="type"><code>fadeOut()</code></td><td class="description last">Fade-out de audio.</td></tr>
+                    <tr><td class="name"><code>bucle()</code></td><td class="type"><code>loop()</code></td><td class="description last">Bucle relativo.</td></tr>
+                    <tr><td class="name"><code>bucleEn()</code></td><td class="type"><code>loopAt()</code></td><td class="description last">Bucle desde un tiempo fijo.</td></tr>
+                    <tr><td class="name"><code>quitarBucle()</code></td><td class="type"><code>unloop()</code></td><td class="description last">Detener bucles.</td></tr>
+                    <tr><td class="name"><code>aqui()</code></td><td class="type"><code>here()</code></td><td class="description last">Marcar un punto y luego buclearlo.</td></tr>
+                    <tr><td class="name"><code>desfase()</code></td><td class="type"><code>phase()</code></td><td class="description last">Desfases temporales.</td></tr>
+                    <tr><td class="name"><code>retraso()</code></td><td class="type"><code>delay()</code></td><td class="description last">Escalonar arranque.</td></tr>
+                    <tr><td class="name"><code>saltar()</code></td><td class="type"><code>jump()</code></td><td class="description last">Saltar segundos.</td></tr>
+                    <tr><td class="name"><code>excepto()</code></td><td class="type"><code>not()</code></td><td class="description last">Seleccionar todos menos algunos índices.</td></tr>
+                    <tr><td class="name"><code>escalaGrises()</code></td><td class="type"><code>grayscale()</code></td><td class="description last">Blanco y negro.</td></tr>
+                    <tr><td class="name"><code>ajustarLuz()</code></td><td class="type"><code>adjustLight()</code></td><td class="description last">Brillo y contraste.</td></tr>
+                    <tr><td class="name"><code>rotarTono()</code></td><td class="type"><code>hueRotate()</code></td><td class="description last">Rotación de color.</td></tr>
+                    <tr><td class="name"><code>desenfocar()</code></td><td class="type"><code>blurVideo()</code></td><td class="description last">Aplicar blur.</td></tr>
+                    <tr><td class="name"><code>saturar()</code></td><td class="type"><code>saturate()</code></td><td class="description last">Cambiar saturación.</td></tr>
+                    <tr><td class="name"><code>filtro()</code></td><td class="type"><code>setFilter()</code></td><td class="description last">Aplicar filtro CSS.</td></tr>
+                    <tr><td class="name"><code>animarFiltro()</code></td><td class="type"><code>animateFilter()</code></td><td class="description last">Animar transición de filtro.</td></tr>
+                    <tr><td class="name"><code>inclinarVideo()</code></td><td class="type"><code>tiltVideo()</code></td><td class="description last">Transformación 3D.</td></tr>
+                    <tr><td class="name"><code>opacidad()</code></td><td class="type"><code>opacity()</code></td><td class="description last">Cambiar opacidad.</td></tr>
+                    <tr><td class="name"><code>aplicarPreset()</code></td><td class="type"><code>applyPreset()</code></td><td class="description last">Aplicar preset visual.</td></tr>
+                    <tr><td class="name"><code>presetOverlay()</code></td><td class="type"><code>applyOverlayPreset()</code></td><td class="description last">Preset con capas (VHS, CRT, glitch).</td></tr>
+                    <tr><td class="name"><code>limpiarFx()</code></td><td class="type"><code>resetFx()</code></td><td class="description last">Quitar todos los efectos visuales.</td></tr>
+                    <tr><td class="name"><code>etiqueta()</code></td><td class="type"><code>alias()</code></td><td class="description last">Definir nombre corto para un ID.</td></tr>
+                    <tr><td class="name"><code>listarEtiquetas()</code></td><td class="type"><code>listarEtiquetas()</code></td><td class="description last">Ver etiquetas definidas.</td></tr>
+                    <tr><td class="name"><code>iniciar()</code></td><td class="type"><code>play()</code></td><td class="description last">Alias de reproducir.</td></tr>
+                    <tr><td class="name"><code>todos</code></td><td class="type"><code>all</code></td><td class="description last">Seleccionar todos los videos.</td></tr>
+                    <tr><td class="name"><code>azar</code></td><td class="type"><code>rand</code></td><td class="description last">Número aleatorio.</td></tr>
+                    <tr><td class="name"><code>repetir</code></td><td class="type"><code>iter</code></td><td class="description last">Alias de <code>setInterval</code>.</td></tr>
+                </tbody>
+            </table>
+            <div class="doc-example">
+<pre class="prettyprint"><code>crear(3, 3, "FGBhQbmPwH8")
+buscar("voz experimental", { maxResults: 8 })
+cambiar(0, "ID_INSERTADO")
+fundirEntrada(todos, 2)
+reproducir(todos)</code></pre>
+            </div>
+
+            <h4 class="name" id="create" data-doc-entry="create crear rejilla filas columnas grid"><span class="type-signature"></span>create<span class="signature">(filas, columnas, id)</span></h4>
+            <div class="description">Crea una rejilla nueva desde cero. Destruye la rejilla anterior. Filas y columnas deben ser <strong>divisores de 12</strong>: 1, 2, 3, 4, 6 o 12.</div>
+            <h5>Parámetros</h5>
+            <table class="params">
+                <tbody>
+                    <tr><td class="name"><code>filas</code></td><td class="type"><span class="param-type">entero</span></td><td class="description last">Número de filas.</td></tr>
+                    <tr><td class="name"><code>columnas</code></td><td class="type"><span class="param-type">entero</span></td><td class="description last">Número de columnas.</td></tr>
+                    <tr><td class="name"><code>id</code></td><td class="type"><span class="param-type">string</span></td><td class="description last">ID de YouTube (11 caracteres) o <strong>etiqueta</strong> definida con <a href="#etiqueta">etiqueta()</a> (p. ej. <code>"Bolaño"</code>).</td></tr>
+                </tbody>
+            </table>
+            <div class="doc-example">
+<pre class="prettyprint"><code>create(2, 2, "FGBhQbmPwH8")   // rejilla 2×2
+create(3, 4, "dQw4w9WgXcQ")   // rejilla 3×4 (12 celdas)</code></pre>
+            </div>
+
+            <h4 class="name" id="createGrid" data-doc-entry="createGrid alias create"><span class="type-signature"></span>createGrid<span class="signature">(filas, columnas, id)</span></h4>
+            <div class="description">Alias de <a href="#create">create()</a>. Misma sintaxis; nombre más descriptivo usado en los ejemplos.</div>
+            <div class="doc-example">
+<pre class="prettyprint"><code>createGrid(3, 3, "FGBhQbmPwH8")</code></pre>
+            </div>
+
+            <h4 class="name" id="add" data-doc-entry="add añadir filas columnas ampliar rejilla"><span class="type-signature"></span>add<span class="signature">(filasExtra, columnasExtra, id)</span></h4>
+            <div class="description">Amplía la rejilla existente añadiendo filas y/o columnas. El total resultante también debe cumplir la regla de divisores de 12.</div>
+            <h5>Parámetros</h5>
+            <table class="params">
+                <tbody>
+                    <tr><td class="name"><code>filasExtra</code></td><td class="type"><span class="param-type">entero</span></td><td class="description last">Filas a añadir.</td></tr>
+                    <tr><td class="name"><code>columnasExtra</code></td><td class="type"><span class="param-type">entero</span></td><td class="description last">Columnas a añadir.</td></tr>
+                    <tr><td class="name"><code>id</code></td><td class="type"><span class="param-type">string</span></td><td class="description last">ID de YouTube para celdas nuevas (opcional).</td></tr>
+                </tbody>
+            </table>
+            <div class="doc-example">
+<pre class="prettyprint"><code>createGrid(2, 2, "abc123")
+add(1, 0, "xyz789")   // pasa a 3×2; nuevas celdas cargan "xyz789"</code></pre>
+            </div>
+
+            <h4 class="name" id="search" data-doc-entry="search buscar youtube consulta resultados filtrar"><span class="type-signature"></span>search<span class="signature">(consulta, opciones)</span></h4>
+            <div class="description">
+                <p>Busca videos en YouTube y abre un <strong>panel de resultados</strong> a la derecha del editor. Cada tarjeta muestra miniatura, título, canal, fecha e ID del video.</p>
+                <p><strong>Clic en un resultado</strong> → inserta el ID entre comillas en el cursor del editor (listo para usar en <code>cue()</code> o <code>createGrid()</code>).</p>
+                <p>El campo <em>Filtrar resultados…</em> del panel reduce la lista en tiempo real sin volver a llamar a la API.</p>
+            </div>
+            <h5>Parámetros</h5>
+            <table class="params">
+                <tbody>
+                    <tr><td class="name"><code>consulta</code></td><td class="type"><span class="param-type">string</span></td><td class="description last">Texto a buscar (título, tema, artista, etc.).</td></tr>
+                    <tr><td class="name"><code>opciones</code></td><td class="type"><span class="param-type">número</span> | <span class="param-type">objeto</span></td><td class="description last">Opcional. Número = cantidad máxima de resultados, o objeto con opciones avanzadas.</td></tr>
+                </tbody>
+            </table>
+            <h5>Opciones del objeto</h5>
+            <table class="params">
+                <tbody>
+                    <tr><td class="name"><code>maxResults</code></td><td class="type"><span class="param-type">entero</span></td><td class="description last">Resultados a pedir (1–50, por defecto 20).</td></tr>
+                    <tr><td class="name"><code>order</code></td><td class="type"><span class="param-type">string</span></td><td class="description last"><code>relevance</code> (defecto), <code>date</code>, <code>viewCount</code>, <code>rating</code>, <code>title</code>.</td></tr>
+                </tbody>
+            </table>
+            <div class="doc-example">
+                <div class="doc-example-title">Ejemplos de búsqueda</div>
+<pre class="prettyprint"><code>// Búsqueda simple
+search("música electroacústica")
+
+// Limitar a 10 resultados
+search("John Cage prepared piano", 10)
+
+// Más recientes primero
+search("performance art", { maxResults: 15, order: "date" })
+
+// Flujo completo: buscar → clic en resultado → usar ID
+search("Sang Won Lee aural cavity")
+// (clic en un video del panel)
+cue(0, "ID_INSERTADO")
+play(0)</code></pre>
+            </div>
+            <div class="doc-note">
+                <strong>Nota:</strong> La búsqueda requiere una clave válida de <em>YouTube Data API v3</em> en <code>main.js</code>. Solo se listan videos embeddables. Si falla, revisa la consola y la configuración de la API en Google Cloud.
+            </div>
+
+            <h4 class="name" id="cue" data-doc-entry="cue cambiar video reemplazar id"><span class="type-signature"></span>cue<span class="signature">(videos, id, cancelarBucle)</span></h4>
+            <div class="description">Sustituye el contenido de las celdas seleccionadas por otro video de YouTube. Reinicia velocidad y volumen; por defecto cancela bucles activos.</div>
+            <h5>Parámetros</h5>
+            <table class="params">
+                <tbody>
+                    <tr><td class="name"><code>videos</code></td><td class="type"><span class="param-type">selección</span></td><td class="description last">Celdas a actualizar.</td></tr>
+                    <tr><td class="name"><code>id</code></td><td class="type"><span class="param-type">string</span></td><td class="description last">Nuevo ID de YouTube.</td></tr>
+                    <tr><td class="name"><code>cancelarBucle</code></td><td class="type"><span class="param-type">booleano</span></td><td class="description last"><code>true</code> (defecto) detiene <code>loop</code>/<code>loopAt</code> en esas celdas.</td></tr>
+                </tbody>
+            </table>
+            <div class="doc-example">
+<pre class="prettyprint"><code>cue(0, "FGBhQbmPwH8")
+cue([2, 3], "nuevoId", false)   // mantiene bucles activos</code></pre>
+            </div>
+
+            <!-- ═══ REPRODUCCIÓN ═══ -->
+
+            <h3 class="subsection-title">Reproducción</h3>
+
+            <h4 class="name" id="play" data-doc-entry="play reproducir iniciar"><span class="type-signature"></span>play<span class="signature">(videos)</span></h4>
+            <div class="description">Inicia la reproducción de los videos seleccionados.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>play(all)
+play([0, 1])</code></pre></div>
+
+            <h4 class="name" id="pause" data-doc-entry="pause pausar detener"><span class="type-signature"></span>pause<span class="signature">(videos)</span></h4>
+            <div class="description">Pausa los videos seleccionados.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>pause(all)
+pause(3)</code></pre></div>
+
+            <h4 class="name" id="seek" data-doc-entry="seek saltar tiempo segundos posicion"><span class="type-signature"></span>seek<span class="signature">(videos, segundos)</span></h4>
+            <div class="description">Salta a un instante concreto del video, en segundos (admite decimales).</div>
+            <div class="doc-example"><pre class="prettyprint"><code>seek(all, 144)        // todos al segundo 144
+seek([2, 3], 90.5)    // dos celdas a 90.5 s</code></pre></div>
+
+            <h4 class="name" id="speed" data-doc-entry="speed velocidad playback rate"><span class="type-signature"></span>speed<span class="signature">(videos, velocidad)</span></h4>
+            <div class="description">Cambia la velocidad de reproducción. <code>1</code> = normal; <code>0.5</code> = mitad; <code>2</code> = doble.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>speed(all, 1.25)
+speed(0, 0.5)
+speed([1, 2], 2)</code></pre></div>
+
+            <h4 class="name" id="sync" data-doc-entry="sync sincronizar tiempo indice"><span class="type-signature"></span>sync<span class="signature">(videos, índice)</span></h4>
+            <div class="description">Alinea los videos seleccionados al tiempo actual del video en <code>índice</code>.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>sync(all, 0)   // todos siguen al video 0</code></pre></div>
+
+            <h4 class="name" id="setQ" data-doc-entry="setQ calidad quality hd"><span class="type-signature"></span>setQ<span class="signature">(videos, calidad)</span></h4>
+            <div class="description">Establece la calidad de reproducción de celdas concretas.</div>
+            <p>Valores: <code>small</code>, <code>medium</code>, <code>large</code>, <code>hd720</code>, <code>hd1080</code>, <code>highres</code>.</p>
+            <div class="doc-example"><pre class="prettyprint"><code>setQ([0, 1], "hd720")</code></pre></div>
+
+            <h4 class="name" id="setQoverall" data-doc-entry="setQoverall calidad global defecto"><span class="type-signature"></span>setQoverall<span class="signature">(calidad)</span></h4>
+            <div class="description">Define la calidad por defecto para videos que se carguen después.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>setQoverall("medium")</code></pre></div>
+
+            <!-- ═══ AUDIO ═══ -->
+
+            <h3 class="subsection-title">Audio</h3>
+
+            <h4 class="name" id="mute" data-doc-entry="mute silenciar sonido audio"><span class="type-signature"></span>mute<span class="signature">(videos, silenciar)</span></h4>
+            <div class="description"><code>true</code> silencia; <code>false</code> restaura el sonido.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>mute(all, true)
+mute(0, false)</code></pre></div>
+
+            <h4 class="name" id="volume" data-doc-entry="volume volumen nivel 0 100"><span class="type-signature"></span>volume<span class="signature">(videos, vol)</span></h4>
+            <div class="description">Fija el volumen entre <code>0</code> (mudo) y <code>100</code> (máximo). También ajusta la opacidad del overlay de la celda.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>volume(0, 50)
+volume(all, 80)</code></pre></div>
+
+            <h4 class="name" id="turnup" data-doc-entry="turnup subir bajar volumen incremento"><span class="type-signature"></span>turnup<span class="signature">(videos, diff)</span></h4>
+            <div class="description">Incrementa o decrementa el volumen actual. Usa valores negativos para bajar.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>turnup(all, 10)      // +10
+turnup([1, 2], -20)  // -20</code></pre></div>
+
+            <h4 class="name" id="fadeIn" data-doc-entry="fadeIn fundido entrada subir volumen gradual"><span class="type-signature"></span>fadeIn<span class="signature">(videos, duración)</span></h4>
+            <div class="description">Sube el volumen de forma gradual. <code>duración</code> en segundos (por defecto 5).</div>
+            <div class="doc-example"><pre class="prettyprint"><code>fadeIn([0, 1], 3)   // fade-in de 3 segundos</code></pre></div>
+
+            <h4 class="name" id="fadeOut" data-doc-entry="fadeOut fundido salida bajar volumen gradual"><span class="type-signature"></span>fadeOut<span class="signature">(videos, duración)</span></h4>
+            <div class="description">Baja el volumen de forma gradual. <code>duración</code> en segundos (por defecto 5).</div>
+            <div class="doc-example"><pre class="prettyprint"><code>fadeOut(all, 5)</code></pre></div>
+
+            <!-- ═══ TIEMPO Y BUCLES ═══ -->
+
+            <h3 class="subsection-title">Tiempo, bucles y ritmo</h3>
+
+            <h4 class="name" id="loop" data-doc-entry="loop bucle repetir fragmento atras intervalo fase"><span class="type-signature"></span>loop<span class="signature">(videos, atrás, intervalo, fase)</span></h4>
+            <div class="description">
+                Crea un bucle relativo: retrocede <code>atrás</code> segundos desde el momento actual y repite cada <code>intervalo</code> segundos.
+                <code>fase</code> desfasa el intervalo de cada celda para crear patrones rítmicos.
+            </div>
+            <div class="doc-example"><pre class="prettyprint"><code>loop(0, 2, 4)           // celda 0: bucle de 2 s cada 4 s
+loop(all, 1, 3, 0.2)    // todas con fase escalonada</code></pre></div>
+
+            <h4 class="name" id="loopAt" data-doc-entry="loopAt bucle tiempo fijo instante"><span class="type-signature"></span>loopAt<span class="signature">(videos, enTiempo, intervalo, fase)</span></h4>
+            <div class="description">Bucle desde un instante absoluto <code>enTiempo</code> (segundos), repitiendo cada <code>intervalo</code>.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>loopAt(3, 197, 4)
+loopAt([0, 3], 152, 0.2)
+loopAt(2, 164.57, 0.2)</code></pre></div>
+
+            <h4 class="name" id="unloop" data-doc-entry="unloop detener bucle cancelar loop"><span class="type-signature"></span>unloop<span class="signature">(videos)</span></h4>
+            <div class="description">Detiene todos los bucles activos en las celdas indicadas.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>unloop(all)
+unloop([1, 2])</code></pre></div>
+
+            <h4 class="name" id="here" data-doc-entry="here marcar punto bucle manual"><span class="type-signature"></span>here<span class="signature">(videos)</span></h4>
+            <div class="description">
+                <strong>Primera llamada:</strong> guarda el instante actual como marca.<br>
+                <strong>Segunda llamada:</strong> crea un bucle entre la marca y el momento actual (equivalente a <code>loopAt</code> con ese rango).
+            </div>
+            <div class="doc-example"><pre class="prettyprint"><code>here(0)    // marca
+// ... deja pasar un fragmento ...
+here(0)    // buclea entre marca y ahora</code></pre></div>
+
+            <h4 class="name" id="phase" data-doc-entry="phase desfase tiempo offset intervalo"><span class="type-signature"></span>phase<span class="signature">(videos, intervalo)</span></h4>
+            <div class="description">Desfasa en el tiempo los videos seleccionados. Intervalo positivo o negativo cambia la dirección del desfase.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>phase(all, 0.5)</code></pre></div>
+
+            <h4 class="name" id="delay" data-doc-entry="delay retraso inicio escalonado"><span class="type-signature"></span>delay<span class="signature">(videos, intervalo)</span></h4>
+            <div class="description">Retrasa el inicio de reproducción entre celdas. Las celdas posteriores arrancan más tarde.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>delay(all, 1)   // cada celda empieza 1 s después</code></pre></div>
+
+            <h4 class="name" id="jump" data-doc-entry="jump salto adelante atras segundos"><span class="type-signature"></span>jump<span class="signature">(videos, num, fase)</span></h4>
+            <div class="description">Salta <code>num</code> segundos (positivo = adelante, negativo = atrás). Con <code>fase</code>, los saltos se escalonan en el tiempo.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>jump(all, 10)
+jump([0, 1], -5, 0.5)</code></pre></div>
+
+            <h4 class="name" id="not" data-doc-entry="not excluir indices seleccion inversa"><span class="type-signature"></span>not<span class="signature">(índices…)</span></h4>
+            <div class="description">Devuelve un array con todos los índices de la rejilla <em>excepto</em> los indicados. Se usa dentro de otras funciones.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>// Rejilla 3×3:
+not(1)       // [0,2,3,4,5,6,7,8]
+not(8, 7)    // todos menos 8 y 7
+
+blurVideo(not(3), 4)   // desenfocar todos excepto celda 3</code></pre></div>
+
+            <!-- ═══ EFECTOS VISUALES ═══ -->
+
+            <h3 class="subsection-title">Efectos visuales</h3>
+            <div class="description">Los efectos usan <strong>filtros CSS en GPU</strong> sobre el iframe y, para scanlines, viñeta o grano, <strong>capas overlay</strong>. No requieren shaders WebGL (el iframe de YouTube no permite leer sus píxeles). Para quitar todo: <code>limpiarFx(todos)</code>.</div>
+
+            <h4 class="name" id="grayscale" data-doc-entry="grayscale escala grises blanco negro escalaGrises"><span class="type-signature"></span>grayscale<span class="signature">(videos, activar)</span></h4>
+            <div class="description">Activa (<code>true</code>) o desactiva (<code>false</code>) escala de grises.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>grayscale([0, 2, 4, 6], true)
+grayscale(all, false)   // restaurar color</code></pre></div>
+
+            <h4 class="name" id="adjustLight" data-doc-entry="adjustLight brillo contraste luz"><span class="type-signature"></span>adjustLight<span class="signature">(videos, brillo, contraste)</span></h4>
+            <div class="description"><code>1</code> = valor normal en ambos. Menor brillo = más oscuro; mayor contraste = más definición.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>adjustLight(all, 0.7, 1.3)</code></pre></div>
+
+            <h4 class="name" id="hueRotate" data-doc-entry="hueRotate matiz color tono grados"><span class="type-signature"></span>hueRotate<span class="signature">(videos, grados)</span></h4>
+            <div class="description">Rota el matiz del color en grados (0–360).</div>
+            <div class="doc-example"><pre class="prettyprint"><code>hueRotate(2, 90)</code></pre></div>
+
+            <h4 class="name" id="blurVideo" data-doc-entry="blurVideo desenfoque blur pixeles"><span class="type-signature"></span>blurVideo<span class="signature">(videos, cantidad)</span></h4>
+            <div class="description">Aplica desenfoque gaussiano en píxeles.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>blurVideo(not(3), 4)   // todo menos celda 3</code></pre></div>
+
+            <h4 class="name" id="saturate" data-doc-entry="saturate saturacion color intensidad"><span class="type-signature"></span>saturate<span class="signature">(videos, cantidad)</span></h4>
+            <div class="description"><code>1</code> = normal; <code>0</code> = sin color; <code>2</code> = muy saturado.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>saturate(all, 1.8)</code></pre></div>
+
+            <h4 class="name" id="setFilter" data-doc-entry="setFilter filtro css personalizado"><span class="type-signature"></span>setFilter<span class="signature">(videos, filtroCSS)</span></h4>
+            <div class="description">Aplica cualquier cadena de filtro CSS válida.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>setFilter(0, "contrast(2) brightness(0.8)")
+setFilter(null, "none")   // quitar filtros de todos</code></pre></div>
+
+            <h4 class="name" id="animateFilter" data-doc-entry="animateFilter animar transicion filtro"><span class="type-signature"></span>animateFilter<span class="signature">(videos, filtroCSS, duración)</span></h4>
+            <div class="description">Transición suave hacia un filtro CSS. Duración en segundos (por defecto 1.5).</div>
+            <div class="doc-example"><pre class="prettyprint"><code>animateFilter([1, 3, 5], "hue-rotate(180deg) saturate(2) blur(1px)", 3)</code></pre></div>
+
+            <h4 class="name" id="tiltVideo" data-doc-entry="tiltVideo inclinar 3d escala transform"><span class="type-signature"></span>tiltVideo<span class="signature">(videos, rotateX, rotateY, escala)</span></h4>
+            <div class="description">Inclinación 3D y escala del video. Valores en grados para rotación.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>tiltVideo(2, 10, -10, 1.1)
+tiltVideo(null, 0, 0, 1)   // reset</code></pre></div>
+
+            <h4 class="name" id="opacity" data-doc-entry="opacity opacidad transparencia alpha"><span class="type-signature"></span>opacity<span class="signature">(videos, alpha)</span></h4>
+            <div class="description">Opacidad visual: <code>0</code> invisible, <code>1</code> opaco.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>opacity(3, 1)       // foco en celda 3
+opacity(null, 1)    // restaurar todos</code></pre></div>
+
+            <h4 class="name" id="applyPreset" data-doc-entry="applyPreset preset visual calm tense dream chaos bolano"><span class="type-signature"></span>applyPreset<span class="signature">(videos, nombre, animar)</span></h4>
+            <div class="description">Aplica un estilo predefinido. Si <code>animar</code> es <code>true</code> (defecto), la transición es suave. Ver también <a href="#applyOverlayPreset">presetOverlay()</a>.</div>
+            <table class="params">
+                <thead><tr><th>Preset</th><th class="last">Efecto</th></tr></thead>
+                <tbody>
+                    <tr><td class="name"><code>calm</code></td><td class="description last">Suave, gris parcial, luminoso.</td></tr>
+                    <tr><td class="name"><code>tense</code></td><td class="description last">Alto contraste y saturación.</td></tr>
+                    <tr><td class="name"><code>dream</code></td><td class="description last">Borroso, brillante, matiz desplazado.</td></tr>
+                    <tr><td class="name"><code>chaos</code></td><td class="description last">Colores invertidos, saturado, leve blur.</td></tr>
+                    <tr><td class="name"><code>dark</code></td><td class="description last">Oscuro con contraste.</td></tr>
+                    <tr><td class="name"><code>soft</code></td><td class="description last">Suave, ligeramente desenfocado.</td></tr>
+                    <tr><td class="name"><code>retro</code></td><td class="description last">Sepia y contraste vintage.</td></tr>
+                    <tr><td class="name"><code>neon</code></td><td class="description last">Colores neón saturados.</td></tr>
+                    <tr><td class="name"><code>horror</code></td><td class="description last">Gris, oscuro, alto contraste.</td></tr>
+                    <tr><td class="name"><code>vhs</code></td><td class="description last">Look cinta VHS (solo filtro).</td></tr>
+                    <tr><td class="name"><code>noir</code></td><td class="description last">Cine negro.</td></tr>
+                    <tr><td class="name"><code>cyberpunk</code></td><td class="description last">Cian/magenta saturado.</td></tr>
+                    <tr><td class="name"><code>bolano</code></td><td class="description last">Sepia suave (preset temático).</td></tr>
+                </tbody>
+            </table>
+            <div class="doc-example"><pre class="prettyprint"><code>aplicarPreset(1, "tense")
+aplicarPreset(todos, "bolano", true)
+listarPresets()   // ver todos en consola</code></pre></div>
+
+            <h4 class="name" id="applyOverlayPreset" data-doc-entry="applyOverlayPreset presetOverlay vhs crt glitch overlay"><span class="type-signature"></span>applyOverlayPreset / presetOverlay<span class="signature">(videos, nombre)</span></h4>
+            <div class="description">Combina filtro CSS con capas overlay (scanlines, viñeta, grano, glitch).</div>
+            <table class="params">
+                <thead><tr><th>Preset</th><th class="last">Incluye</th></tr></thead>
+                <tbody>
+                    <tr><td class="name"><code>vhs</code></td><td class="description last">Filtro VHS + líneas + viñeta + grano.</td></tr>
+                    <tr><td class="name"><code>crt</code></td><td class="description last">Scanlines CRT + viñeta.</td></tr>
+                    <tr><td class="name"><code>glitch</code></td><td class="description last">Glitch animado + contraste alto.</td></tr>
+                </tbody>
+            </table>
+            <div class="doc-example"><pre class="prettyprint"><code>presetOverlay(todos, "vhs")
+presetOverlay(0, "crt")</code></pre></div>
+
+            <h4 class="name" id="sepia" data-doc-entry="sepia tono vintage"><span class="type-signature"></span>sepia<span class="signature">(videos, cantidad)</span></h4>
+            <div class="description"><code>1</code> = sepia completo. Alias en español: mismo nombre.</div>
+
+            <h4 class="name" id="invert" data-doc-entry="invert invertir negativo"><span class="type-signature"></span>invert / invertir<span class="signature">(videos, cantidad)</span></h4>
+            <div class="description">Invierte colores (<code>1</code> = negativo completo).</div>
+
+            <h4 class="name" id="duotone" data-doc-entry="duotone duotono dos tonos"><span class="type-signature"></span>duotone / duotono<span class="signature">(videos, tonoGrados)</span></h4>
+            <div class="description">Efecto de dos tonos. Por defecto <code>200</code> grados de matiz.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>duotono(todos, 220)</code></pre></div>
+
+            <h4 class="name" id="mixBlend" data-doc-entry="mixBlend mezcla blend modo"><span class="type-signature"></span>mixBlend / mezcla<span class="signature">(videos, modo)</span></h4>
+            <div class="description">Modo de mezcla CSS: <code>screen</code>, <code>multiply</code>, <code>difference</code>, etc.</div>
+
+            <h4 class="name" id="flip" data-doc-entry="flip mirror espejo voltear"><span class="type-signature"></span>flip / espejo<span class="signature">(videos, horizontal, vertical)</span></h4>
+            <div class="description"><code>espejo(todos)</code> voltea horizontalmente.</div>
+
+            <h4 class="name" id="vignette" data-doc-entry="vignette vigneta oscurecer bordes"><span class="type-signature"></span>vignette / vigneta<span class="signature">(videos, fuerza)</span></h4>
+            <div class="description">Viñeta oscura en los bordes. <code>fuerza</code> entre <code>0</code> y <code>1</code> (defecto <code>0.75</code>).</div>
+
+            <h4 class="name" id="scanlines" data-doc-entry="scanlines lineas crt"><span class="type-signature"></span>scanlines / lineas<span class="signature">(videos, opacidad)</span></h4>
+            <div class="description">Líneas horizontales estilo monitor CRT.</div>
+
+            <h4 class="name" id="filmGrain" data-doc-entry="filmGrain grano ruido pelicula"><span class="type-signature"></span>filmGrain / grano<span class="signature">(videos, opacidad)</span></h4>
+            <div class="description">Grano de película (ruido SVG).</div>
+
+            <h4 class="name" id="glitch" data-doc-entry="glitch fallo distorsion"><span class="type-signature"></span>glitch<span class="signature">(videos, activar)</span></h4>
+            <div class="description">Activa (<code>true</code>) o desactiva glitch animado.</div>
+
+            <h4 class="name" id="pulse" data-doc-entry="pulse pulso brillo animado"><span class="type-signature"></span>pulse / pulso<span class="signature">(videos, activar)</span></h4>
+            <div class="description">Pulso rítmico de brillo.</div>
+
+            <h4 class="name" id="pixelate" data-doc-entry="pixelate pixelar bloques"><span class="type-signature"></span>pixelate / pixelar<span class="signature">(videos, bloques)</span></h4>
+            <div class="description">Pixelación simulada. <code>bloques</code> = factor de escala (defecto <code>6</code>).</div>
+
+            <h4 class="name" id="resetFx" data-doc-entry="resetFx limpiarFx quitar efectos restaurar"><span class="type-signature"></span>resetFx / limpiarFx<span class="signature">(videos)</span></h4>
+            <div class="description">Elimina filtros, overlays, animaciones y restaura el tamaño del reproductor.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>limpiarFx(todos)</code></pre></div>
+
+            <h4 class="name" id="listarPresets" data-doc-entry="listarPresets presets disponibles"><span class="type-signature"></span>listarPresets<span class="signature">()</span></h4>
+            <div class="description">Muestra en la consola los nombres de <code>VisualPresets</code> y <code>OverlayPresets</code>.</div>
+
+            <!-- ═══ EJEMPLO COMPLETO ═══ -->
+
+            <h3 class="subsection-title" id="ejemplo-completo" data-doc-entry="ejemplo completo composicion performance">Ejemplo de composición</h3>
+            <div class="description">Fragmento inspirado en <code>examplecode.js</code> — performance con bucles, búsqueda y efectos.</div>
+            <div class="doc-example">
+<pre class="prettyprint"><code>crear(2, 2, "FGBhQbmPwH8")
+
+buscar("Sang Won Lee aural cavity")
+// Clic en un resultado → insertar ID
+
+bucleEn(3, 197, 4)
+bucleEn(2, 164.57, 0.2)
+fundirEntrada([0, 1], 3)
+fundirSalida([0, 1], 5)
+
+velocidad(todos, 1.25)
+silenciar(todos, true)
+volumen(0, 50)
+
+escalaGrises([0, 2], true)
+aplicarPreset(1, "tense")
+desenfocar(excepto(3), 4)
+opacidad(3, 1)
+
+// Restaurar visuales
+limpiarFx(todos)</code></pre>
+            </div>
+
+            <!-- ═══ ETIQUETAS DE VIDEO ═══ -->
+
+            <h3 class="subsection-title" id="etiquetas-video" data-doc-entry="etiquetas tags alias id video nombre corto">Etiquetas para IDs de video</h3>
+            <div class="description">
+                <p>En lugar de recordar IDs largos de YouTube (p. ej. <code>iqtYrcE27hE</code>), puedes definir <strong>etiquetas</strong> con nombres cortos y usarlas en <code>crear()</code>, <code>agregar()</code> y <code>cambiar()</code>.</p>
+                <p>Las etiquetas <strong>no distinguen mayúsculas</strong>: <code>"Bolaño"</code>, <code>"bolaño"</code> y <code>"BOLAÑO"</code> son equivalentes.</p>
+            </div>
+
+            <h4 class="name" id="etiqueta" data-doc-entry="etiqueta etiquetar alias tag nombre video id"><span class="type-signature"></span>etiqueta / etiquetar / alias<span class="signature">(nombre, id)</span></h4>
+            <div class="description">Registra una etiqueta. El segundo argumento puede ser un ID de YouTube o el nombre de otra etiqueta ya definida.</div>
+            <h5>Parámetros</h5>
+            <table class="params">
+                <tbody>
+                    <tr><td class="name"><code>nombre</code></td><td class="type"><span class="param-type">string</span></td><td class="description last">Nombre corto, p. ej. <code>"Bolaño"</code>, <code>"Rim"</code>.</td></tr>
+                    <tr><td class="name"><code>id</code></td><td class="type"><span class="param-type">string</span></td><td class="description last">ID de YouTube (11 caracteres) u otra etiqueta.</td></tr>
+                </tbody>
+            </table>
+            <div class="doc-example">
+                <div class="doc-example-title">Definir y usar etiquetas</div>
+<pre class="prettyprint"><code>// Definir una etiqueta nueva
+etiqueta("Rim", "dQw4w9WgXcQ")
+etiqueta("Bolaño", "iqtYrcE27hE")
+
+// Usar la etiqueta en lugar del ID
+crear(1, 1, "Bolaño")
+cambiar(todos, "Rim")
+
+// Apuntar una etiqueta a otra
+etiqueta("Favorito", "Bolaño")
+crear(2, 2, "Favorito")</code></pre>
+            </div>
+
+            <h4 class="name" id="listarEtiquetas" data-doc-entry="listarEtiquetas ver etiquetas tags definidos"><span class="type-signature"></span>listarEtiquetas<span class="signature">()</span></h4>
+            <div class="description">Muestra una tabla en la consola del navegador (F12) con todas las etiquetas y sus IDs. También devuelve un objeto con el mapa completo.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>listarEtiquetas()</code></pre></div>
+
+            <div class="doc-example">
+                <div class="doc-example-title">Etiqueta incluida por defecto</div>
+                <table class="params">
+                    <thead><tr><th>Etiqueta</th><th class="last">ID de YouTube</th></tr></thead>
+                    <tbody>
+                        <tr><td class="name"><code>Bolaño</code> / <code>Bolano</code></td><td class="description last"><code>iqtYrcE27hE</code></td></tr>
+                    </tbody>
+                </table>
+<pre class="prettyprint"><code>crear(1, 1, "Bolaño")   // listo para usar sin configurar nada</code></pre>
+            </div>
+
+            <div class="description">
+                <p><strong>Dónde funciona la resolución de etiquetas:</strong> <code>crear()</code>, <code>createGrid()</code>, <code>agregar()</code>, <code>cambiar()</code> / <code>cue()</code>.</p>
+                <p>Para añadir etiquetas fijas al proyecto, edita el objeto <code>videoAliases</code> al inicio de <code>js/main.js</code>.</p>
+            </div>
+
+            <!-- ═══ AYUDA ═══ -->
+
+            <h3 class="subsection-title">Ayuda y documentación</h3>
+
+            <h4 class="name" id="help" data-doc-entry="help ayuda ingles english"><span class="type-signature"></span>help<span class="signature">(función)</span></h4>
+            <div class="description">Abre la documentación en inglés en una pestaña nueva.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>help()
+help("search")</code></pre></div>
+
+            <h4 class="name" id="ayuda" data-doc-entry="ayuda español spanish documentacion"><span class="type-signature"></span>ayuda<span class="signature">(función)</span></h4>
+            <div class="description">Abre esta documentación en español en el <strong>panel derecho</strong>, sin salir del editor. Sin argumentos muestra la página completa; con nombre de función salta a esa sección.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>ayuda()
+ayuda("buscar")
+ayuda("bucleEn")
+ayuda("escalaGrises")
+ayuda("etiqueta")
+ayuda("limpiarFx")
+ayuda("etiquetas-video")</code></pre></div>
+
+        </article>
+    </section>
+</div>
+
+<nav>
+    <h2><a href="global.html">Inicio</a></h2>
+
+    <h3>General</h3>
+    <ul>
+        <li><a href="#introduccion">Introducción</a></li>
+        <li><a href="#atajos">Atajos</a></li>
+        <li><a href="#_howToSelectVideos">Seleccionar videos</a></li>
+        <li><a href="#variables">Variables</a></li>
+        <li><a href="#funciones-espanol">Funciones en español</a></li>
+        <li><a href="#ejemplo-completo">Ejemplo completo</a></li>
+        <li><a href="#etiquetas-video">Etiquetas de video</a></li>
+    </ul>
+
+    <h3>Rejilla</h3>
+    <ul>
+        <li><a href="#create">create</a></li>
+        <li><a href="#createGrid">createGrid</a></li>
+        <li><a href="#add">add</a></li>
+        <li><a href="#search">search</a></li>
+        <li><a href="#cue">cue</a></li>
+    </ul>
+
+    <h3>Reproducción</h3>
+    <ul>
+        <li><a href="#play">play</a></li>
+        <li><a href="#pause">pause</a></li>
+        <li><a href="#seek">seek</a></li>
+        <li><a href="#speed">speed</a></li>
+        <li><a href="#sync">sync</a></li>
+        <li><a href="#setQ">setQ</a></li>
+        <li><a href="#setQoverall">setQoverall</a></li>
+    </ul>
+
+    <h3>Audio</h3>
+    <ul>
+        <li><a href="#mute">mute</a></li>
+        <li><a href="#volume">volume</a></li>
+        <li><a href="#turnup">turnup</a></li>
+        <li><a href="#fadeIn">fadeIn</a></li>
+        <li><a href="#fadeOut">fadeOut</a></li>
+    </ul>
+
+    <h3>Tiempo</h3>
+    <ul>
+        <li><a href="#loop">loop</a></li>
+        <li><a href="#loopAt">loopAt</a></li>
+        <li><a href="#unloop">unloop</a></li>
+        <li><a href="#here">here</a></li>
+        <li><a href="#phase">phase</a></li>
+        <li><a href="#delay">delay</a></li>
+        <li><a href="#jump">jump</a></li>
+        <li><a href="#not">not</a></li>
+    </ul>
+
+    <h3>Visuales</h3>
+    <ul>
+        <li><a href="#grayscale">grayscale</a></li>
+        <li><a href="#adjustLight">adjustLight</a></li>
+        <li><a href="#hueRotate">hueRotate</a></li>
+        <li><a href="#blurVideo">blurVideo</a></li>
+        <li><a href="#saturate">saturate</a></li>
+        <li><a href="#setFilter">setFilter</a></li>
+        <li><a href="#animateFilter">animateFilter</a></li>
+        <li><a href="#tiltVideo">tiltVideo</a></li>
+        <li><a href="#opacity">opacity</a></li>
+        <li><a href="#applyPreset">applyPreset</a></li>
+        <li><a href="#applyOverlayPreset">presetOverlay</a></li>
+        <li><a href="#resetFx">limpiarFx</a></li>
+        <li><a href="#listarPresets">listarPresets</a></li>
+    </ul>
+
+    <h3>Etiquetas</h3>
+    <ul>
+        <li><a href="#etiquetas-video">Introducción</a></li>
+        <li><a href="#etiqueta">etiqueta()</a></li>
+        <li><a href="#listarEtiquetas">listarEtiquetas()</a></li>
+    </ul>
+
+    <h3>Ayuda</h3>
+    <ul>
+        <li><a href="#help">help</a></li>
+        <li><a href="#ayuda">ayuda</a></li>
+    </ul>
+
+    <p><a href="../global.html">English</a></p>
+</nav>
+
+<br class="clear">
+
+<footer>
+    LiveTube-Coding — documentación en español (actualizada)
+</footer>
+
+<script src="../scripts/prettify/prettify.js"></script>
+<script> prettyPrint(); </script>
+<script src="doc-es.js"></script>
+</body>
+</html>

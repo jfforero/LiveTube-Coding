@@ -1,27 +1,22 @@
 
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>live coding youtube</title>
+    <meta name="grammarly-disable-extension" content="true">
+    <title>Rim-Bot vuelve a casa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
-    <!-- Bootstrap -->
-    <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-    <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="./codemirror/lib/codemirror.css">
@@ -32,47 +27,54 @@
     <script src="./codemirror/addon/selection/active-line.js"></script>
     <script src="./codemirror/addon/edit/matchbrackets.js"></script>
     <script src="./js/main.js"></script>
-
   </head>
   <body>
-    <div id= "youtubegrid"class="container-fixed">
+    <div id="youtubegrid" class="container-fixed"></div>
+    <div id="youtubegrid-state" class="container-fixed"></div>
 
-    </div>
-    <div id= "youtubegrid-state" class="container-fixed">
-
-    </div>
-
-<!--  <div id="resizable" class="ui-widget-content">
-      <div class="ui-widget-header">code editor</div>
-      -->
-      <div id= "code-container" class="container-fixed">
+    <div id="code-container" class="container-fixed">
+      <header class="app-bar">
+        <div class="app-brand">
+          <span class="app-brand-mark">◉</span>
+          <span class="app-brand-name">Rim-Bot</span>
+          <span class="app-brand-tagline">vuelve a casa</span>
+        </div>
+        <div class="app-hints">
+          <kbd>Shift</kbd><span>+</span><kbd>Enter</kbd> ejecutar
+          <span class="hint-sep">·</span>
+          <kbd>Alt</kbd><span>+</span><kbd>Enter</kbd> ayuda
+        </div>
+      </header>
 
       <div class="youtube-result">
-        <button class = "search-result-close-button btn btn-default">CLOSE</button>
-        <div class = "youtube-result-list">
+        <div class="youtube-result-header">
+          <div class="panel-title">Resultados</div>
+          <button type="button" class="search-result-close-button btn-ui btn-ui-ghost">Cerrar</button>
+          <input type="text" class="search-result-filter" placeholder="Filtrar resultados…" aria-label="Filtrar resultados">
         </div>
+        <div class="youtube-result-meta"></div>
+        <div class="youtube-result-list"></div>
       </div>
 
-	      <textarea id="code" name="code">
-Mari Mari Kom Pu Che
+      <textarea id="code" name="code" spellcheck="false" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false">// Rim-Bot vuelve a casa
+crear(1, 1, "Bolaño")
+aplicarPreset(todos, "bolano")
+// presetOverlay(todos, "vhs")  → scanlines + grano + viñeta
+// limpiarFx(todos)
 </textarea>
-
     </div>
-    <div class = "go-back-editor">
-          <button class = "go-back-button btn btn-default">Go Back</button>
-        </div>
 
+    <div class="help-panel">
+      <div class="help-panel-header">
+        <span class="help-panel-title">Ayuda</span>
+        <button type="button" class="help-panel-close-button btn-ui btn-ui-ghost">Cerrar</button>
+      </div>
+      <div class="help-panel-status"></div>
+      <iframe class="help-panel-frame" title="Documentación LiveTube-Coding" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false"></iframe>
+    </div>
 
-
+    <div class="go-back-editor">
+      <button type="button" class="go-back-button btn-ui btn-ui-primary">Volver al editor</button>
+    </div>
   </body>
 </html>
-<script>
-//  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-//  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-//  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-//  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-//  ga('create', 'UA-99338775-1', 'auto');
-//  ga('send', 'pageview');
-
-</script>

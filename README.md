@@ -185,20 +185,6 @@ LiveTube-Coding/
 └── examplecode.js      # Ejemplos de performance
 ```
 
-## Seguridad de la API key
-
-- **No** incluyas claves en `main.js` ni en commits públicos
-- **No** uses “encriptación” en el navegador: el cliente siempre puede leer el secreto
-- Si una clave estuvo expuesta en Git, **revócala** y crea una nueva
-- Para GitHub Pages sin `config.local.js`, usa un proxy en servidor o GitHub Actions con Secrets
-
-## Despliegue (GitHub Pages)
-
-1. Sube el repo a GitHub
-2. Activa Pages en la rama `main`
-3. Para `buscar()` en producción, configura la clave vía CI (Secret) o un proxy backend
-
-Sin configuración adicional, la rejilla y los efectos funcionan; solo la búsqueda requiere la API key.
 
 ## Licencia
 

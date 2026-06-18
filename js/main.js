@@ -554,6 +554,14 @@ function addVideo(i,j){
 }
 var searchResult = [];
 
+function getYoutubeApiKey() {
+  var cfg = window.LIVETUBE_CONFIG;
+  if (!cfg || !cfg.youtubeApiKey) return '';
+  var key = String(cfg.youtubeApiKey).trim();
+  if (!key || key === 'TU_CLAVE_YOUTUBE_DATA_API') return '';
+  return key;
+}
+
 function escapeHtml(text) {
   return $('<div>').text(text || '').html();
 }
@@ -683,10 +691,22 @@ function search(query, options) {
   $('.youtube-result-list').empty();
   $('.search-result-filter').val('');
 
+  var apiKey = getYoutubeApiKey();
+  if (!apiKey) {
+    $('.youtube-result-meta').html(
+      '<span class="search-error">Falta la clave de YouTube Data API.</span>'
+    );
+    $('.youtube-result-list').html(
+      '<div class="search-error">Copia <code>js/config.example.js</code> → <code>js/config.local.js</code>, ' +
+      'pega tu clave y recarga. Ese archivo no se sube a Git (ver <code>.gitignore</code>).</div>'
+    );
+    return;
+  }
+
   var url = 'https://www.googleapis.com/youtube/v3/search';
   var params = {
     part: 'snippet',
-    key: 'AIzaSyC-fZCe4HKnS5bvkK4hU8TuWd8m9ntmi-A',
+    key: apiKey,
     q: query,
     type: 'video',
     maxResults: maxResults,
@@ -709,7 +729,7 @@ function search(query, options) {
     console.error(message, jqXHR);
     $('.youtube-result-meta').html('<span class="search-error">' + escapeHtml(message) + '</span>');
     $('.youtube-result-list').html(
-      '<div class="search-error">Verifica que la clave de YouTube Data API en main.js sea válida y tenga la API habilitada.</div>'
+      '<div class="search-error">Verifica la clave en <code>js/config.local.js</code> y que YouTube Data API v3 esté habilitada en Google Cloud.</div>'
     );
   });
 }

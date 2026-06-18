@@ -1,0 +1,7 @@
+# Claves y configuración local (no subir al repositorio público)
+js/config.local.js
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+*.log

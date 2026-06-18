@@ -26,7 +26,8 @@
     <script src="./codemirror/mode/javascript/javascript.js"></script>
     <script src="./codemirror/addon/selection/active-line.js"></script>
     <script src="./codemirror/addon/edit/matchbrackets.js"></script>
-    <script src="./js/config.local.js"></script>
+    <script>window.LIVETUBE_CONFIG = window.LIVETUBE_CONFIG || {};</script>
+    <script src="./js/config.local.js" onerror="void 0"></script>
     <script src="./js/main.js"></script>
   </head>
   <body>
@@ -76,6 +77,25 @@ aplicarPreset(todos, "bolano")
 
     <div class="go-back-editor">
       <button type="button" class="go-back-button btn-ui btn-ui-primary">Volver al editor</button>
+    </div>
+
+    <div class="api-key-modal" id="api-key-modal" role="dialog" aria-labelledby="api-key-modal-title" aria-modal="true" hidden>
+      <div class="api-key-modal-backdrop"></div>
+      <div class="api-key-modal-panel">
+        <h2 class="api-key-modal-title" id="api-key-modal-title">Clave de YouTube Data API</h2>
+        <p class="api-key-modal-desc">
+          Para usar <code>buscar()</code> necesitas una clave de
+          <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener noreferrer">YouTube Data API v3</a>.
+          La clave se guarda solo en este navegador.
+        </p>
+        <label class="api-key-modal-label" for="api-key-input">API key</label>
+        <input type="password" id="api-key-input" class="api-key-modal-input" placeholder="AIza…" autocomplete="off" spellcheck="false">
+        <p class="api-key-modal-error" id="api-key-error" hidden></p>
+        <div class="api-key-modal-actions">
+          <button type="button" class="btn-ui btn-ui-ghost" id="api-key-skip">Omitir por ahora</button>
+          <button type="button" class="btn-ui btn-ui-primary" id="api-key-save">Guardar</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>

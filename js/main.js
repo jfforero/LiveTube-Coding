@@ -324,6 +324,9 @@ $(document).ready(function () {
   }, 120));
 
   $(window).on('resize', _.debounce(refreshGridCellSizes, 150));
+
+  initApiKeyModal();
+  promptYoutubeApiKeyIfNeeded();
 });
 
 /**
@@ -554,12 +557,79 @@ function addVideo(i,j){
 }
 var searchResult = [];
 
+var YOUTUBE_API_KEY_STORAGE = 'livetube.youtubeApiKey';
+
+function isValidYoutubeApiKey(key) {
+  key = String(key || '').trim();
+  return key.length > 0 && key !== 'TU_CLAVE_YOUTUBE_DATA_API';
+}
+
 function getYoutubeApiKey() {
   var cfg = window.LIVETUBE_CONFIG;
-  if (!cfg || !cfg.youtubeApiKey) return '';
-  var key = String(cfg.youtubeApiKey).trim();
-  if (!key || key === 'TU_CLAVE_YOUTUBE_DATA_API') return '';
-  return key;
+  if (cfg && cfg.youtubeApiKey && isValidYoutubeApiKey(cfg.youtubeApiKey)) {
+    return String(cfg.youtubeApiKey).trim();
+  }
+  try {
+    var stored = localStorage.getItem(YOUTUBE_API_KEY_STORAGE);
+    if (isValidYoutubeApiKey(stored)) return String(stored).trim();
+  } catch (e) {}
+  return '';
+}
+
+function setYoutubeApiKey(key) {
+  if (!isValidYoutubeApiKey(key)) return false;
+  key = String(key).trim();
+  window.LIVETUBE_CONFIG = window.LIVETUBE_CONFIG || {};
+  window.LIVETUBE_CONFIG.youtubeApiKey = key;
+  try {
+    localStorage.setItem(YOUTUBE_API_KEY_STORAGE, key);
+  } catch (e) {}
+  return true;
+}
+
+function showApiKeyModal() {
+  var $modal = $('#api-key-modal');
+  var $input = $('#api-key-input');
+  var $error = $('#api-key-error');
+  $error.prop('hidden', true).text('');
+  $input.val(getYoutubeApiKey());
+  $modal.removeAttr('hidden').addClass('is-open');
+  setTimeout(function () { $input.trigger('focus'); }, 50);
+}
+
+function hideApiKeyModal() {
+  $('#api-key-modal').removeClass('is-open').attr('hidden', true);
+  $('#api-key-error').prop('hidden', true).text('');
+}
+
+function promptYoutubeApiKeyIfNeeded() {
+  if (getYoutubeApiKey()) return;
+  showApiKeyModal();
+}
+
+function initApiKeyModal() {
+  $('#api-key-save').on('click', function () {
+    var key = $('#api-key-input').val();
+    if (!isValidYoutubeApiKey(key)) {
+      $('#api-key-error').text('Introduce una clave válida.').prop('hidden', false);
+      return;
+    }
+    setYoutubeApiKey(key);
+    hideApiKeyModal();
+  });
+
+  $('#api-key-skip').on('click', hideApiKeyModal);
+
+  $('#api-key-input').on('keydown', function (ev) {
+    if (ev.which === 13) {
+      ev.preventDefault();
+      $('#api-key-save').trigger('click');
+    } else if (ev.which === 27) {
+      hideApiKeyModal();
+    }
+  });
+
+  $('.api-key-modal-backdrop').on('click', hideApiKeyModal);
 }
 
 function escapeHtml(text) {
@@ -697,9 +767,12 @@ function search(query, options) {
       '<span class="search-error">Falta la clave de YouTube Data API.</span>'
     );
     $('.youtube-result-list').html(
-      '<div class="search-error">Copia <code>js/config.example.js</code> → <code>js/config.local.js</code>, ' +
-      'pega tu clave y recarga. Ese archivo no se sube a Git (ver <code>.gitignore</code>).</div>'
+      '<div class="search-error">' +
+      'Configura tu clave para usar la búsqueda. ' +
+      '<button type="button" class="btn-ui btn-ui-primary api-key-open-button">Configurar API key</button>' +
+      '</div>'
     );
+    $('.api-key-open-button').on('click', showApiKeyModal);
     return;
   }
 

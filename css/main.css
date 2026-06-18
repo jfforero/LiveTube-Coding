@@ -527,7 +527,7 @@ body {
 .div_state {
   height: 100%;
   opacity: 0;
-  background-color: rgba(0, 0, 0, 0.01);
+  background-color: #000;
   transition: opacity var(--transition), background-color var(--transition);
 }
 

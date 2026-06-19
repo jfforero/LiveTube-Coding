@@ -28,11 +28,13 @@
     <script src="./codemirror/addon/edit/matchbrackets.js"></script>
     <script>window.LIVETUBE_CONFIG = window.LIVETUBE_CONFIG || {};</script>
     <script src="./js/config.local.js" onerror="void 0"></script>
+    <script src="./js/text-layer.js"></script>
     <script src="./js/main.js"></script>
   </head>
   <body>
     <div id="youtubegrid" class="container-fixed"></div>
     <div id="youtubegrid-state" class="container-fixed"></div>
+    <div id="lcy-text-layer" class="container-fixed lcy-text-layer"></div>
 
     <div id="code-container" class="container-fixed">
       <header class="app-bar">
@@ -60,9 +62,9 @@
 
       <textarea id="code" name="code" spellcheck="false" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false">// LiveTube Coding
 crear(1, 1, "Bolaño")
-aplicarPreset(todos, "bolano")
-// presetOverlay(todos, "vhs")  → scanlines + grano + viñeta
-// limpiarFx(todos)
+texto(0, "LiveTube", { size: 48, color: "#63b3ed" })
+// textoEfecto(0, "caer", 2)
+// limpiarTexto(0)
 </textarea>
     </div>
 

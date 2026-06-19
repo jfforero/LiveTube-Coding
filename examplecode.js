@@ -48,9 +48,11 @@ opacity(3, 1);          // full focus on 3
 animateFilter([1,3,5], "hue-rotate(180deg) saturate(2) blur(1px)", 3);
 
 // Tilt one video for spatial rhythm
-tiltVideo(2, 10, -10, 1.1);
+tiltVideo(2, 10, -10);
+scale(2, 1.1);
 
 // Restore all visuals
 setFilter(null, "none");
 opacity(null, 1);
-tiltVideo(null, 0, 0, 1);
+scale(null, 1);
+tiltVideo(null, 0, 0);

@@ -144,11 +144,15 @@ desenfocar(excepto(4), 3)  // desenfocar todos menos el 4</code></pre>
                     <tr><td class="name"><code>saturar()</code></td><td class="type"><code>saturate()</code></td><td class="description last">Cambiar saturación.</td></tr>
                     <tr><td class="name"><code>filtro()</code></td><td class="type"><code>setFilter()</code></td><td class="description last">Aplicar filtro CSS.</td></tr>
                     <tr><td class="name"><code>animarFiltro()</code></td><td class="type"><code>animateFilter()</code></td><td class="description last">Animar transición de filtro.</td></tr>
-                    <tr><td class="name"><code>inclinarVideo()</code></td><td class="type"><code>tiltVideo()</code></td><td class="description last">Transformación 3D.</td></tr>
+                    <tr><td class="name"><code>inclinarVideo()</code></td><td class="type"><code>tiltVideo()</code></td><td class="description last">Inclinación 3D (rotación).</td></tr>
+                    <tr><td class="name"><code>escalar()</code></td><td class="type"><code>scale()</code></td><td class="description last">Escala del video.</td></tr>
                     <tr><td class="name"><code>opacidad()</code></td><td class="type"><code>opacity()</code></td><td class="description last">Cambiar opacidad.</td></tr>
                     <tr><td class="name"><code>aplicarPreset()</code></td><td class="type"><code>applyPreset()</code></td><td class="description last">Aplicar preset visual.</td></tr>
                     <tr><td class="name"><code>presetOverlay()</code></td><td class="type"><code>applyOverlayPreset()</code></td><td class="description last">Preset con capas (VHS, CRT, glitch).</td></tr>
                     <tr><td class="name"><code>limpiarFx()</code></td><td class="type"><code>resetFx()</code></td><td class="description last">Quitar todos los efectos visuales.</td></tr>
+                    <tr><td class="name"><code>texto()</code></td><td class="type"><code>text()</code></td><td class="description last">Texto sobre una celda.</td></tr>
+                    <tr><td class="name"><code>textoEfecto()</code></td><td class="type"><code>textEffect()</code></td><td class="description last">Efectos: caer, colapsar, ofuscar.</td></tr>
+                    <tr><td class="name"><code>limpiarTexto()</code></td><td class="type"><code>clearText()</code></td><td class="description last">Quitar texto de celdas.</td></tr>
                     <tr><td class="name"><code>etiqueta()</code></td><td class="type"><code>alias()</code></td><td class="description last">Definir nombre corto para un ID.</td></tr>
                     <tr><td class="name"><code>listarEtiquetas()</code></td><td class="type"><code>listarEtiquetas()</code></td><td class="description last">Ver etiquetas definidas.</td></tr>
                     <tr><td class="name"><code>iniciar()</code></td><td class="type"><code>play()</code></td><td class="description last">Alias de reproducir.</td></tr>
@@ -410,10 +414,45 @@ setFilter(null, "none")   // quitar filtros de todos</code></pre></div>
             <div class="description">Transición suave hacia un filtro CSS. Duración en segundos (por defecto 1.5).</div>
             <div class="doc-example"><pre class="prettyprint"><code>animateFilter([1, 3, 5], "hue-rotate(180deg) saturate(2) blur(1px)", 3)</code></pre></div>
 
-            <h4 class="name" id="tiltVideo" data-doc-entry="tiltVideo inclinar 3d escala transform"><span class="type-signature"></span>tiltVideo<span class="signature">(videos, rotateX, rotateY, escala)</span></h4>
-            <div class="description">Inclinación 3D y escala del video. Valores en grados para rotación.</div>
-            <div class="doc-example"><pre class="prettyprint"><code>tiltVideo(2, 10, -10, 1.1)
-tiltVideo(null, 0, 0, 1)   // reset</code></pre></div>
+            <h4 class="name" id="tiltVideo" data-doc-entry="tiltVideo inclinar 3d transform"><span class="type-signature"></span>tiltVideo<span class="signature">(videos, rotateX, rotateY)</span></h4>
+            <div class="description">Inclinación 3D del video. Valores en grados para rotación. No cambia la escala; usa <a href="#scale">scale()</a>.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>tiltVideo(2, 10, -10)
+tiltVideo(null, 0, 0)   // quitar inclinación</code></pre></div>
+
+            <h4 class="name" id="scale" data-doc-entry="scale escalar tamaño zoom"><span class="type-signature"></span>scale<span class="signature">(videos, escalaX, escalaY)</span></h4>
+            <div class="description">Escala del video. <code>1</code> = tamaño normal, <code>0.5</code> = mitad, <code>2</code> = doble. Si omites <code>escalaY</code>, la escala es uniforme.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>scale(all, 0.5)
+scale(2, 1.5)
+scale(null, 1)   // restaurar escala</code></pre></div>
+
+            <h4 class="name" id="text" data-doc-entry="text texto overlay fuente"><span class="type-signature"></span>text / texto<span class="signature">(videos, contenido, opciones)</span></h4>
+            <div class="description">Coloca texto sobre celdas. Opciones: <code>font</code>, <code>size</code>, <code>color</code>, <code>weight</code>, <code>align</code>, <code>x</code>, <code>y</code> (0–1 dentro de la celda). También: argumentos cortos <code>texto(0, "hola", 48, "#63b3ed")</code> o marcas inline <code>[[color:#63b3ed|size:56]]texto[[/]]</code>.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>texto(0, "LiveTube", { size: 56, color: "#63b3ed", font: "Inter" })
+texto(0, "[[color:#f56565|size:80]]AO[[/]] [[color:#63b3ed]]vivo[[/]]", 42)
+textoFuente(0, "JetBrains Mono")
+textoTamano(0, 72)
+textoColor(0, "#f56565")
+textoEstilo(0, { align: "left", x: 0.1, y: 0.2 })</code></pre></div>
+
+            <h4 class="name" id="commandText" data-doc-entry="commandText comando editor texto"><span class="type-signature"></span>commandText / comando<span class="signature">(contenido, opciones)</span></h4>
+            <div class="description">Texto sobre el <strong>editor de comandos</strong> (donde escribes el código). Acepta las mismas opciones y marcas inline que <code>texto()</code>.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>comando("[[size:28|color:#63b3ed]]LiveTube[[/]] en vivo")
+estiloComando({ font: "Inter", size: 22 })
+estiloEditor({ font: "JetBrains Mono", size: 18, color: "#fbd38d" })
+efectoComando("caer", 2)
+efectoEditor("ofuscar", 3)   // efecto sobre el código del editor
+efectoEditor("normal")         // = restaurarEditor()
+restaurarEditor()              // atajo: Esc, clic, Ctrl+Shift+E
+limpiarComando()</code></pre></div>
+
+            <h4 class="name" id="textEffect" data-doc-entry="textEffect textoEfecto caer colapsar ofuscar"><span class="type-signature"></span>textEffect / textoEfecto<span class="signature">(videos, efecto, duración)</span></h4>
+            <div class="description">Efectos: <code>caer</code> / <code>drop</code> (letras caen al suelo), <code>colapsar</code> / <code>collapse</code>, <code>ofuscar</code> / <code>obfuscate</code>. <code>normal</code> restaura el texto.</div>
+            <div class="doc-example"><pre class="prettyprint"><code>textoEfecto(0, "caer", 2.5)
+textoEfecto(todos, "colapsar", 1)
+textoEfecto(0, "ofuscar", 3)
+textoEfecto(0, "normal")
+textoInteractivo(0, function () { textoColor(0, "#68d391") })
+limpiarTexto(0)</code></pre></div>
 
             <h4 class="name" id="opacity" data-doc-entry="opacity opacidad transparencia alpha"><span class="type-signature"></span>opacity<span class="signature">(videos, alpha)</span></h4>
             <div class="description">Opacidad visual: <code>0</code> invisible, <code>1</code> opaco.</div>
@@ -666,6 +705,9 @@ ayuda("etiquetas-video")</code></pre></div>
         <li><a href="#setFilter">setFilter</a></li>
         <li><a href="#animateFilter">animateFilter</a></li>
         <li><a href="#tiltVideo">tiltVideo</a></li>
+        <li><a href="#scale">scale</a></li>
+        <li><a href="#text">text</a></li>
+        <li><a href="#textEffect">textEffect</a></li>
         <li><a href="#opacity">opacity</a></li>
         <li><a href="#applyPreset">applyPreset</a></li>
         <li><a href="#applyOverlayPreset">presetOverlay</a></li>

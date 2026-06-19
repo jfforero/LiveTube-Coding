@@ -1186,11 +1186,13 @@ function volume(list,vol) {
   });
 }
 
-function adjustVolume(video, vol){
+function adjustVolume(video, vol) {
   video.setVolume(vol);
-  var opacity = 1 - vol / 100;
+}
+
+function setFadeOverlay(video, vol) {
   var stateEl = video.lcy_stateEl || document.getElementById('state-div-' + video.lcy_i + '-' + video.lcy_j);
-  if (stateEl) stateEl.style.opacity = opacity;
+  if (stateEl) stateEl.style.opacity = 1 - vol / 100;
 }
 
 /**
@@ -1225,6 +1227,7 @@ function turnup(list, diff) {
     video.playVideo();
     video.setPlaybackRate(1);
     adjustVolume(video, 100);
+    setFadeOverlay(video, 100);
     video.initialized = true;
     if(video.loopHandle && cancelloop){
       clearInterval(video.loopHandle);
@@ -1239,8 +1242,9 @@ function fadeInInner(video, diff) {
     var currentVolume = video.getVolume();
     // console.log("cur: " + currentVolume + "/ diff: "+diff);
     if (currentVolume < 100) {
-        //video.setVolume(currentVolume + diff);
-        adjustVolume(video,currentVolume + diff );
+        var newVolume = currentVolume + diff;
+        adjustVolume(video, newVolume);
+        setFadeOverlay(video, newVolume);
         return setTimeout((function() {
             return fadeInInner(video, diff);
         }), 100);
@@ -1283,8 +1287,9 @@ function fadeOutInner(video, diff) {
     video.lcy_fading = true;
     var currentVolume = video.getVolume();
     if (currentVolume > 0) {
-        //video.setVolume(currentVolume - diff);
-        adjustVolume(video, currentVolume - diff);
+        var newVolume = currentVolume - diff;
+        adjustVolume(video, newVolume);
+        setFadeOverlay(video, newVolume);
         return setTimeout((function() {
             return fadeOutInner(video, diff);
         }), 100);

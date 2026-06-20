@@ -1249,10 +1249,12 @@ function speed(list, newSpeed) {
 function mute(list, mute) {
     var selectedVideos =  selectVideos(list);
     selectedVideos.forEach(function(video){
-      if (mute)
-        video.mute()
-      else
-        video.unMute()
+      if (mute) {
+        stopFade(video);
+        video.mute();
+      } else {
+        video.unMute();
+      }
     });
 }
 
@@ -1264,18 +1266,31 @@ function mute(list, mute) {
 function volume(list,vol) {
   var selectedVideos =  selectVideos(list);
   selectedVideos.forEach(function(video){
-    //video.setVolume(vol);
+    stopFade(video);
     adjustVolume(video, vol);
+    setFadeOverlay(video, vol);
   });
 }
 
+function clampVolume(vol) {
+  return Math.max(0, Math.min(100, vol));
+}
+
+function stopFade(video) {
+  if (video.lcy_fadeTimer) {
+    clearTimeout(video.lcy_fadeTimer);
+    video.lcy_fadeTimer = null;
+  }
+  video.lcy_fading = false;
+}
+
 function adjustVolume(video, vol) {
-  video.setVolume(vol);
+  video.setVolume(clampVolume(vol));
 }
 
 function setFadeOverlay(video, vol) {
   var stateEl = video.lcy_stateEl || document.getElementById('state-div-' + video.lcy_i + '-' + video.lcy_j);
-  if (stateEl) stateEl.style.opacity = 1 - vol / 100;
+  if (stateEl) stateEl.style.opacity = 1 - clampVolume(vol) / 100;
 }
 
 /**
@@ -1286,9 +1301,10 @@ function setFadeOverlay(video, vol) {
 function turnup(list, diff) {
   var selectedVideos =  selectVideos(list);
   selectedVideos.forEach(function(video){
-    var newVolume = video.getVolume() + diff
-    //video.setVolume(newVolume)
+    stopFade(video);
+    var newVolume = clampVolume(video.getVolume() + diff);
     adjustVolume(video, newVolume);
+    setFadeOverlay(video, newVolume);
   });
 }
 //function alternate(list, )
@@ -1323,17 +1339,20 @@ function fadeInInner(video, diff) {
     video.lcy_fading = true;
 
     var currentVolume = video.getVolume();
-    // console.log("cur: " + currentVolume + "/ diff: "+diff);
     if (currentVolume < 100) {
-        var newVolume = currentVolume + diff;
+        var newVolume = clampVolume(currentVolume + diff);
         adjustVolume(video, newVolume);
         setFadeOverlay(video, newVolume);
-        return setTimeout((function() {
-            return fadeInInner(video, diff);
-        }), 100);
+        if (newVolume >= 100) {
+          video.lcy_fading = false;
+          return;
+        }
+        video.lcy_fadeTimer = setTimeout(function() {
+            fadeInInner(video, diff);
+        }, 100);
+        return;
     }
     video.lcy_fading = false;
-
 }
 
 /**
@@ -1345,37 +1364,35 @@ function fadeIn(list,duration) {
     if(!duration) duration = 5;
     var diff = 10.0 / duration;
     var selectedVideos =  selectVideos(list);
-    /*selectedVideos.forEach(function(v){
-      v.setVolume(0);
-    });
-*/
-    var fadeInCall = function(v){
-      if(!v.lcy_fading){
-        fadeInInner(v, diff);
-      }else{
-        setTimeout(function(){
-          fadeInCall(v);
-        },100);
+    selectedVideos.forEach(function(v){
+      stopFade(v);
+      v.unMute();
+      if (v.getPlayerState() != YTSTATE_PLAYING) {
+        v.playVideo();
       }
-    };
-    selectedVideos.forEach(fadeInCall);
-    /*
+      adjustVolume(v, 0);
+      setFadeOverlay(v, 0);
+    });
     selectedVideos.forEach(function(v){
       fadeInInner(v, diff);
     });
-*/
 }
 
 function fadeOutInner(video, diff) {
     video.lcy_fading = true;
     var currentVolume = video.getVolume();
     if (currentVolume > 0) {
-        var newVolume = currentVolume - diff;
+        var newVolume = clampVolume(currentVolume - diff);
         adjustVolume(video, newVolume);
         setFadeOverlay(video, newVolume);
-        return setTimeout((function() {
-            return fadeOutInner(video, diff);
-        }), 100);
+        if (newVolume <= 0) {
+          video.lcy_fading = false;
+          return;
+        }
+        video.lcy_fadeTimer = setTimeout(function() {
+            fadeOutInner(video, diff);
+        }, 100);
+        return;
     }
     video.lcy_fading = false;
 }
@@ -1389,16 +1406,10 @@ function fadeOut(list,duration) {
     if(!duration) duration = 5;
     var diff = 10.0 / duration;
     var selectedVideos =  selectVideos(list);
-    var fadeOutCall = function(v){
-      if(!v.lcy_fading){
-        fadeOutInner(v, diff);
-      }else{
-        setTimeout(function(){
-          fadeOutCall(v);
-        },100);
-      }
-    };
-    selectedVideos.forEach(fadeOutCall);
+    selectedVideos.forEach(function(v){
+      stopFade(v);
+      fadeOutInner(v, diff);
+    });
 }
 
 /**

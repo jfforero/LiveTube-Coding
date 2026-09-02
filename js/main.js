@@ -1287,6 +1287,11 @@ function adjustVolume(video, vol) {
   video.setVolume(clampVolume(vol));
 }
 
+function setFadeOverlay(video, vol) {
+  var stateEl = video.lcy_stateEl || document.getElementById('state-div-' + video.lcy_i + '-' + video.lcy_j);
+  if (stateEl) stateEl.style.opacity = 1 - clampVolume(vol) / 100;
+}
+
 /**
  * Increase (or decrease) volume of the selected videos.
  * @param {select} videos - See [how to select videos]{@link _howToSelectVideos}.
@@ -1334,6 +1339,7 @@ function fadeInInner(video, diff) {
     if (currentVolume < 100) {
         var newVolume = clampVolume(currentVolume + diff);
         adjustVolume(video, newVolume);
+        setFadeOverlay(video, newVolume);
         if (newVolume >= 100) {
           video.lcy_fading = false;
           return;
@@ -1362,6 +1368,7 @@ function fadeIn(list,duration) {
         v.playVideo();
       }
       adjustVolume(v, 0);
+      setFadeOverlay(v, 0);
     });
     selectedVideos.forEach(function(v){
       fadeInInner(v, diff);
@@ -1374,6 +1381,7 @@ function fadeOutInner(video, diff) {
     if (currentVolume > 0) {
         var newVolume = clampVolume(currentVolume - diff);
         adjustVolume(video, newVolume);
+        setFadeOverlay(video, newVolume);
         if (newVolume <= 0) {
           video.lcy_fading = false;
           return;
